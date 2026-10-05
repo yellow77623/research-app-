@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>My Little Calm</title>
+<meta name="description" content="A free, private coping app for teens: short exercises that grow a little island.">
+<meta name="theme-color" content="#2b2d42">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style>
+:root{box-sizing:border-box;--bg:#eaf4f4;--ink:#2b2d42;--panel:rgba(255,255,255,.94);--card:#fff;--mute:#5b6478;--line:#dde5ec;--blue:#0b7a96;--btnink:#fff;--green:#2f9e6b;--chip:#f0f4f8;--page:#2b2d42;--sky:#b5e2fa}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#16202b;--ink:#eaf1f6;--panel:rgba(30,40,52,.94);--card:#223040;--mute:#a7b4c2;--line:#32424f;--blue:#48cae4;--btnink:#0d1218;--green:#7ad3a4;--chip:#2a3948;--page:#0d1218;--sky:#2a4a6b}}
+:root[data-theme="dark"]{--bg:#16202b;--ink:#eaf1f6;--panel:rgba(30,40,52,.94);--card:#223040;--mute:#a7b4c2;--line:#32424f;--blue:#48cae4;--btnink:#0d1218;--green:#7ad3a4;--chip:#2a3948;--page:#0d1218;--sky:#2a4a6b}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--page);display:flex;justify-content:center;align-items:center;min-height:100dvh;color:var(--ink)}
+.frame{width:390px;height:800px;max-height:100dvh;background:var(--bg);border-radius:40px;border:8px solid #1a1a24;box-shadow:0 20px 50px rgba(0,0,0,.5);position:relative;overflow:hidden}
+@media (max-width:480px){body{display:block}.frame{width:100%;height:100dvh;border:0;border-radius:0;box-shadow:none}}
+.top{position:absolute;top:0;left:0;right:0;z-index:20;background:var(--panel);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:space-between;gap:6px;padding:calc(10px + env(safe-area-inset-top,0px)) 10px 10px;box-shadow:0 2px 10px rgba(0,0,0,.08)}
+.badge{background:var(--chip);border-radius:20px;padding:6px 10px;font-size:13px;font-weight:700;white-space:nowrap}
+.sos{background:none;border:1.5px solid var(--blue);color:var(--blue);border-radius:20px;padding:5px 12px;font-weight:700;font-size:13px}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;gap:12px;padding:calc(72px + env(safe-area-inset-top,0px)) 16px calc(88px + env(safe-area-inset-bottom,0px));overflow-y:auto}
+.screen.on{display:flex}
+#s1{padding:0;gap:0}
+#stage{position:absolute;inset:0;background:linear-gradient(var(--sky),var(--bg))}
+#stage canvas{display:block;width:100%;height:100%;touch-action:manipulation}
+.overlay{position:absolute;left:14px;right:14px;bottom:calc(80px + env(safe-area-inset-bottom,0px));background:var(--panel);border-radius:16px;padding:12px;text-align:center}
+.bar{height:8px;border-radius:4px;background:var(--line);overflow:hidden;margin:6px 0}
+.bar i{display:block;height:100%;background:var(--green);transition:width .4s;width:0}
+.zb{display:flex;gap:6px;justify-content:center;margin:8px 0 4px;flex-wrap:wrap}
+h2{font-size:20px;line-height:1.2}h3{font-size:16px}
+p,li{font-size:14px;line-height:1.45}.mute{color:var(--mute)}.small{font-size:12.5px}
+.card{background:var(--card);border-radius:16px;padding:14px;box-shadow:0 4px 12px rgba(0,0,0,.05)}
+.card>*+*{margin-top:8px}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.btn{background:var(--blue);color:var(--btnink);border:0;border-radius:12px;padding:10px 16px;font-weight:700}
+.btn.alt{background:none;color:var(--ink);border:1.5px solid var(--line)}
+.btn:active{transform:scale(.96)}
+.btn[disabled]{opacity:.5}
+.act{display:flex;gap:12px;align-items:center;text-align:left;background:var(--card);border:0;border-radius:16px;padding:12px 14px;width:100%;box-shadow:0 4px 12px rgba(0,0,0,.05)}
+.act+.act{margin-top:10px}.act small{display:block;color:var(--mute);font-size:12.5px}.act[disabled]{opacity:.55;cursor:default}
+.ic{font-size:26px}
+.mood{display:flex;gap:6px}.mood button{flex:1;font-size:26px;background:var(--chip);border:2px solid transparent;border-radius:12px;padding:6px 0}
+.mood button[aria-pressed=true]{border-color:var(--blue)}
+.week{display:flex;gap:6px;align-items:flex-end;height:56px}.week i{flex:1;background:var(--blue);border-radius:5px 5px 0 0;min-height:3px}
+.bnav{position:absolute;bottom:0;left:0;right:0;z-index:20;background:var(--panel);backdrop-filter:blur(8px);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px))}
+.bnav button{background:none;border:0;display:flex;flex-direction:column;align-items:center;font-size:11px;color:var(--mute);padding:4px 8px;border-radius:12px;min-width:56px}
+.bnav button span{font-size:20px}.bnav button[aria-current=true]{color:var(--blue);font-weight:700}
+#cm{display:flex;flex-direction:column;gap:8px;flex:1;min-height:180px;overflow-y:auto;background:var(--card);border-radius:16px;padding:12px}
+.msg{max-width:82%;padding:8px 12px;border-radius:12px;font-size:13.5px}.msg.bot{background:var(--chip);align-self:flex-start}.msg.me{background:var(--blue);color:var(--btnink);align-self:flex-end}
+.row{display:flex;gap:8px}.row input,textarea{flex:1;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;width:100%}
+textarea{min-height:90px}
+#sheet{position:absolute;inset:0;background:rgba(10,12,24,.55);display:none;align-items:flex-end;z-index:50}
+#sheet.on{display:flex}#sheet>div{background:var(--card);width:100%;border-radius:24px 24px 0 0;padding:20px 20px calc(24px + env(safe-area-inset-bottom,0px));max-height:90%;overflow:auto}
+#sheet>div>*+*{margin-top:10px}
+.breath{width:120px;height:120px;border-radius:50%;background:var(--blue);margin:14px auto;opacity:.85;transform:scale(.6);transition:transform 4s ease-in-out}
+.breath.in{transform:scale(1)}.breath.out{transform:scale(.6);transition-duration:6s}
+.c{text-align:center}ul{padding-left:20px}a{color:var(--blue)}
+@media (prefers-reduced-motion:reduce){.breath{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="frame">
+ <div class="top"><span class="badge">💧 <b id="r-calm">0</b> Calm</span><span class="badge">📝 <b id="r-words">0</b> Words</span><span class="badge">🌱 <b id="r-roots">0</b> Roots</span><button class="sos" onclick="help()">Help</button></div>
+
+ <section id="s1" class="screen on" aria-label="Island">
+  <div id="stage" role="img" aria-label="Your island with Pip"></div>
+  <div class="overlay"><b>Island Expansion</b><div class="bar"><i id="pbar"></i></div><small id="ptxt" class="mute"></small><div class="zb" id="zb"></div><p class="small mute" id="say"></p></div>
+ </section>
+
+ <section id="s2" class="screen" aria-label="Calm tools">
+  <div class="card"><h2>How are you today?</h2><div class="mood" id="mood"></div><p class="small mute">No wrong answers. Logging how you feel helps you notice what helps.</p><div class="week" id="week" role="img" aria-label="Mood over the last 7 days"></div></div>
+  <div><h2 style="margin:4px 0 10px">Mining Calm</h2><div id="tools"></div></div>
+ </section>
+
+ <section id="s3" class="screen" aria-label="Upgrades">
+  <h2>Coping Anvil</h2><p class="mute">Level up a skill to earn more every time you use it.</p>
+  <div class="card"><b>🫁 Deep Breathing · Lv <span id="lvb"></span></b><p class="small mute">+1 Calm per level from slow breathing.</p><button class="btn" id="ub" onclick="up('breath')"></button></div>
+  <div class="card"><b>📝 Journaling Quill · Lv <span id="lvq"></span></b><p class="small mute">+1 Words per level from Name it.</p><button class="btn" id="uq" onclick="up('quill')"></button></div>
+ </section>
+
+ <section id="s4" class="screen" aria-label="Chat">
+  <h2>The Sanctuary</h2>
+  <div id="cm" aria-live="polite"></div>
+  <div class="row"><input id="ci" aria-label="Message to Pip" placeholder="Type here..." onkeydown="if(event.key=='Enter')send()"><button class="btn" onclick="send()">Send</button></div>
+  <p class="small mute">Pip gives simple keyword replies, is not a person or therapist, and nothing you type is saved or sent anywhere.</p>
+ </section>
+
+ <section id="s5" class="screen" aria-label="Parent and resource hub">
+  <h2>Parent &amp; Resource Hub</h2>
+  <div class="card"><h3>About this app</h3><p>Free, private coping exercises for everyday stress: no account, ads or purchases. It is not therapy and cannot treat or fix a mental health condition.</p></div>
+  <div class="card"><h3>Why it exists</h3><p>Reports describe many teens struggling with stress and limited, costly access to support. This is one small low-cost tool and does not claim to solve that problem.</p><p class="small"><a href="https://calmatters.org/health/mental-health/2026/06/teen-mental-health-report/" target="_blank" rel="noopener">CalMatters report</a> · <a href="https://www.ppic.org/publication/teen-mental-health-and-school-based-services-in-california/" target="_blank" rel="noopener">PPIC report</a></p></div>
+  <div class="card"><h3>This week (only if your teen agrees)</h3><label><input type="checkbox" id="shr" onchange="S.share=this.checked;save();upd()"> Teen agrees to share activity counts</label><p id="pst" class="small"></p><p class="small mute">Counts only. Journal sentences, chat and mood are never shown.</p></div>
+  <div class="card"><h3>Starting a conversation</h3><ul><li>"Things seem heavy lately. I'm here if you want to talk."</li><li>"What helps most when you feel stressed?"</li><li>Listen first. Try not to fix right away.</li></ul></div>
+  <div class="card"><h3>Need support?</h3><p>If stress, sleep, eating or mood changes last more than a couple of weeks, or your teen talks about self-harm, contact a doctor, school counselor or mental health professional. In the US, call or text <b>988</b> any time, or text <b>HOME</b> to <b>741741</b>. Emergency: <b>911</b>.</p></div>
+ </section>
+
+ <nav class="bnav" id="bn"></nav>
+ <div id="sheet" role="dialog" aria-modal="true"><div id="sb"></div></div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// Mechanics ported from the Unity prototype: ResourceBase (collect + rest), AreaUnlocker (contribute), GameSaveManager (save/load)
+const RES={calm:'Calm',words:'Words',roots:'Roots'};
+const ACTS={breathe:{i:'🫁',n:'Slow breathing',d:'About 40 seconds',r:'calm',amt:3,cool:60},
+ name:{i:'📝',n:'Name it',d:'One sentence about how you feel',r:'words',amt:2,cool:60},
+ ground:{i:'🌿',n:'5-4-3-2-1 grounding',d:'Notice what is around you',r:'roots',amt:3,cool:60},
+ cloud:{i:'☁️',n:'Cloud pop',d:'Pop 10 stress clouds',r:'calm',amt:1,cool:30}};
+const ZONES=[
+ {id:'meadow',n:'Meadow',px:-2.3,pz:.8,cost:{calm:6},card:['Name it to calm it','Putting a feeling into one word ("nervous", "tired", "let down") can turn its volume down a little. Try it next time something feels big.']},
+ {id:'tide',n:'Tide Pool',px:2.3,pz:.8,cost:{calm:8,words:6},card:['Box breathing','Breathe in for 4, hold for 4, out for 4, hold for 4. Do four rounds. You can do this quietly in class.']},
+ {id:'sky',n:'Night Sky',px:0,pz:-2.2,cost:{calm:10,words:8,roots:8},card:['Pick one person','Choose one person you trust (a friend, relative, counselor) and think of one sentence you could send them on a hard day.']}];
+const DEF={res:{calm:0,words:0,roots:0},prog:{},unlocked:[],cool:{},moods:[],log:[],share:false,lv:{breath:1,quill:1}};
+let S;try{S=Object.assign({},DEF,JSON.parse(localStorage.getItem('mlc')))}catch(e){S=JSON.parse(JSON.stringify(DEF))}
+const save=()=>{try{localStorage.setItem('mlc',JSON.stringify(S))}catch(e){}};
+const $=s=>document.querySelector(s),day=()=>new Date().toISOString().slice(0,10);
+const esc=x=>x.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const amt=k=>ACTS[k].amt+(k=='breathe'?S.lv.breath-1:k=='name'?S.lv.quill-1:0);
+let cur=1;
+const NAV=[['🏝️','Island'],['🌿','Calm'],['🛠️','Upgrades'],['💬','Chat'],['ℹ️','Info']];
+function switchScreen(n){cur=n;document.querySelectorAll('.screen').forEach((s,i)=>s.classList.toggle('on',i+1==n));$('#bn').innerHTML=NAV.map(([e,l],i)=>`<button onclick="switchScreen(${i+1})" aria-current="${i+1==n}"><span>${e}</span>${l}</button>`).join('');if(n==1)requestAnimationFrame(size);if(n==2)renderTools()}
+function renderTools(){$('#tools').innerHTML=Object.entries(ACTS).map(([k,a])=>{const w=(S.cool[k]||0)-Date.now(),wait=w>0;return `<button class="act" ${wait?'disabled':''} onclick="start('${k}')"><span class="ic">${a.i}</span><div><b>${a.n}</b><small>${wait?'Resting · '+Math.ceil(w/1000)+'s':a.d+' · +'+amt(k)+' '+RES[a.r]}</small></div></button>`}).join('')}
+setInterval(()=>{if(cur==2&&Object.values(S.cool).some(v=>v>Date.now()-1100))renderTools()},1000);
+function upd(){
+ for(const k in RES)$('#r-'+k).textContent=S.res[k];
+ const n=S.unlocked.length;$('#pbar').style.width=n/ZONES.length*100+'%';$('#ptxt').textContent=`${n} / ${ZONES.length} places grown`;
+ $('#zb').innerHTML=ZONES.map(z=>`<button class="btn alt" onclick="go('${z.id}')">${z.n}${S.unlocked.includes(z.id)?' ✓':''}</button>`).join('');
+ const t=S.moods.find(m=>m.d==day()),v=t?t.v:0;
+ $('#say').textContent=!v?"Hi, I'm Pip. Tap a place and I'll walk there with you.":v<=2?'Rough day? Small steps count. Even one slow breath is enough.':v==3?'Okay is okay. Want to try one thing together?':"Nice to see you doing alright. Let's grow something.";
+ $('#mood').innerHTML=['😞','😕','😐','🙂','😄'].map((e,i)=>`<button aria-label="Mood ${i+1} of 5" aria-pressed="${v==i+1}" onclick="setMood(${i+1})">${e}</button>`).join('');
+ $('#week').innerHTML=[...Array(7)].map((_,i)=>{const d=new Date(Date.now()-(6-i)*864e5).toISOString().slice(0,10),m=S.moods.find(x=>x.d==d);return `<i style="height:${m?m.v*20:5}%;opacity:${m?1:.3}"></i>`}).join('');
+ $('#lvb').textContent=S.lv.breath;$('#lvq').textContent=S.lv.quill;$('#ub').textContent=`Upgrade · ${10*S.lv.breath} Calm`;$('#uq').textContent=`Upgrade · ${8*S.lv.quill} Words`;
+ const wk=S.log.filter(l=>Date.now()-new Date(l.d)<7*864e5),by=k=>wk.filter(l=>l.a==k).length;
+ $('#shr').checked=S.share;$('#pst').textContent=S.share?`Breathing ${by('breathe')}× · Naming feelings ${by('name')}× · Grounding ${by('ground')}× · Cloud pop ${by('cloud')}×`:'Off by default so your teen keeps their privacy.';
+ updatePip();if(cur==2)renderTools()}
+function setMood(v){S.moods=S.moods.filter(m=>m.d!=day());S.moods.push({d:day(),v});S.moods=S.moods.slice(-60);save();upd()}
+function open_(h){$('#sb').innerHTML=h;$('#sheet').classList.add('on')}
+function closeSheet(){$('#sheet').classList.remove('on');clearTimeout(window.bt)}
+$('#sheet').onclick=e=>{if(e.target.id=='sheet')closeSheet()};
+document.onkeydown=e=>{if(e.key=='Escape')closeSheet()};
+function help(){open_(`<h2>You are not alone</h2><p>Call or text <b>988</b> any time (US). Text <b>HOME</b> to <b>741741</b>. In danger now? Call <b>911</b>.</p><p class="mute">Telling a trusted adult is a strong move. Outside the US, search for your local crisis line.</p><button class="btn" onclick="closeSheet()">Close</button>`)}
+function reward(k){const a=ACTS[k];S.res[a.r]+=amt(k);S.cool[k]=Date.now()+a.cool*1000;S.log.push({d:day(),a:k});S.log=S.log.slice(-300);save();closeSheet();upd()}
+function start(k){({breathe,name:nameIt,ground,cloud})[k]()}
+function breathe(){let n=0;open_(`<h2>Slow breathing</h2><p class="mute">Three slow breaths. In through the nose, out through the mouth.</p><div class="breath" id="b"></div><p class="c" id="bt" aria-live="polite">Get comfortable</p><div class="c"><button class="btn alt" onclick="closeSheet()">Stop</button></div>`);
+ const cyc=()=>{if(!$('#sheet').classList.contains('on'))return;if(n==3)return reward('breathe');const b=$('#b');b.className='breath in';$('#bt').textContent='Breathe in…';window.bt=setTimeout(()=>{b.className='breath out';$('#bt').textContent='Slowly out…';window.bt=setTimeout(()=>{n++;cyc()},6000)},4000)};window.bt=setTimeout(cyc,600)}
+function nameIt(){open_(`<h2>Name it</h2><p class="mute">One sentence is enough. It stays on this device and is not saved.</p><textarea id="t" aria-label="How do you feel" placeholder="Right now I feel… because…"></textarea><div class="row"><button class="btn" onclick="if($('#t').value.trim())reward('name');else $('#t').focus()">Done</button><button class="btn alt" onclick="closeSheet()">Not now</button></div>`)}
+function ground(){const st=['Name 5 things you can see.','Name 4 things you can touch.','Name 3 things you can hear.','Name 2 things you can smell.','Name 1 thing you can taste, or 1 good thing about you.'];let i=0;
+ const go_=()=>{open_(`<h2>5-4-3-2-1</h2><p style="font-size:18px">${st[i]}</p><p class="mute small">Take your time. Step ${i+1} of 5.</p><div class="row"><button class="btn" id="nx">${i==4?'Finish':'Next'}</button><button class="btn alt" onclick="closeSheet()">Stop</button></div>`);$('#nx').onclick=()=>{if(i==4)reward('ground');else{i++;go_()}}};go_()}
+function cloud(){let n=0;open_(`<h2>Cloud pop</h2><p class="mute">Tap the cloud to pop the stress away. Go at your own pace.</p><div class="c"><button class="btn" id="cl" style="font-size:38px;width:120px;height:120px;border-radius:50%" aria-label="Pop cloud">☁️</button></div><p class="c" id="cn" aria-live="polite">0 / 10</p><div class="c"><button class="btn alt" onclick="closeSheet()">Stop</button></div>`);
+ $('#cl').onclick=()=>{n++;$('#cn').textContent=n+' / 10';if(n>=10)reward('cloud')}}
+function up(k){const r=k=='breath'?'calm':'words',c=(k=='breath'?10:8)*S.lv[k];
+ if(S.res[r]<c)return open_(`<h2>Not quite yet</h2><p class="mute">You need ${c} ${RES[r]}. Try an exercise first.</p><button class="btn" onclick="closeSheet()">OK</button>`);
+ S.res[r]-=c;S.lv[k]++;save();upd()}
+function zone(id){const z=ZONES.find(x=>x.id==id);
+ if(S.unlocked.includes(id))return open_(`<h2>${z.n}</h2><div class="card"><h3>${z.card[0]}</h3><p>${z.card[1]}</p></div><button class="btn" onclick="closeSheet()">Close</button>`);
+ const p=S.prog[id]=S.prog[id]||{};
+ open_(`<h2>Grow the ${z.n}</h2><p class="mute">Add what you have earned. Partial progress is saved.</p>${Object.entries(z.cost).map(([k,c])=>`<div><small>${RES[k]}: ${p[k]||0} / ${c}</small><div class="bar"><i style="width:${(p[k]||0)/c*100}%"></i></div></div>`).join('')}<div class="row"><button class="btn" onclick="give('${id}')">Add my resources</button><button class="btn alt" onclick="closeSheet()">Close</button></div>`)}
+function give(id){const z=ZONES.find(x=>x.id==id),p=S.prog[id];
+ for(const k in z.cost){const m=Math.min(S.res[k],z.cost[k]-(p[k]||0));p[k]=(p[k]||0)+m;S.res[k]-=m}
+ if(Object.keys(z.cost).every(k=>p[k]>=z.cost[k]))S.unlocked.push(id);
+ save();upd();zone(id)}
+function go(id){const z=ZONES.find(x=>x.id==id);if(!T){if(cur!=1)switchScreen(1);return zone(id)}if(cur!=1)switchScreen(1);T.tgt=new THREE.Vector3(z.px,0,z.pz+1.3);setTimeout(()=>zone(id),reduce?0:900)}
+// Chat
+const chat=[{b:1,t:"Hello! I'm Pip. I'm a simple helper, not a person or a therapist. What's on your mind today?"}];
+function paint(){$('#cm').innerHTML=chat.map(m=>`<div class="msg ${m.b?'bot':'me'}">${esc(m.t)}</div>`).join('');$('#cm').scrollTop=1e5}
+function reply(t){t=t.toLowerCase();
+ if(/kill myself|suicid|end it all|want to die|hurt myself|self.?harm|cut myself|don'?t want to (be here|live)|better off without me/.test(t))return "I'm really glad you told me. You deserve support from a real person right now. In the US, call or text 988 any time, or text HOME to 741741. If you are in danger, call 911. Please also tell a trusted adult.";
+ if(/bull|abus|unsafe|hit me/.test(t))return "That sounds really hard, and it is not your fault. Please tell a trusted adult, like a parent, teacher or school counselor, so you are not carrying it alone.";
+ if(/stress|exam|test|school|homework|grade/.test(t))return "School pressure is a lot. Try splitting work into 20-minute chunks with short breaks. Want to do slow breathing first? Check the Calm tab.";
+ if(/sad|lonely|alone|down|cry/.test(t))return "I'm sorry you feel that way. Feelings like this are common, even when they feel heavy. Naming it can help: try Name it in the Calm tab. Is there someone you could text today?";
+ if(/anx|panic|worr|nervous|scared/.test(t))return "That sounds uncomfortable. Try 5-4-3-2-1 grounding: name 5 things you can see. You can find it in the Calm tab.";
+ if(/angry|mad|frustrat|annoy/.test(t))return "Anger makes sense when something feels unfair. Try a few slow breaths or pop some clouds before reacting. What happened?";
+ if(/sleep|tired|exhaust/.test(t))return "Being tired makes everything harder. A screen-free wind-down and slow breathing before bed can help. If it keeps up, tell a parent or doctor.";
+ return "Thanks for telling me. I'm listening. Want to tell me more, or try an exercise together?"}
+function send(){const i=$('#ci'),t=i.value.trim();if(!t)return;chat.push({t},{b:1,t:reply(t)});i.value='';paint()}
+// 3D island with smooth Pip
+let T=null;const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+function size(){const st=$('#stage');if(!st||!T||!st.clientWidth)return;const w=st.clientWidth,h=st.clientHeight,a=w/h,k=Math.max(1,.98/a);T.r.setSize(w,h);T.cam.aspect=a;T.cam.position.set(0,7*k,8.5*k);T.cam.lookAt(0,0,1);T.cam.updateProjectionMatrix()}
+addEventListener('resize',size);
+function init3d(){
+ const sc=new THREE.Scene(),cam=new THREE.PerspectiveCamera(50,1,.1,100);
+ const r=new THREE.WebGLRenderer({antialias:true,alpha:true});r.setPixelRatio(Math.min(devicePixelRatio,2));
+ sc.add(new THREE.AmbientLight(0xffffff,.85));const sun=new THREE.DirectionalLight(0xffffff,.8);sun.position.set(4,10,5);sc.add(sun);
+ const M=c=>new THREE.MeshStandardMaterial({color:c}),P=(g,c,x,y,z)=>{const m=new THREE.Mesh(g,M(c));m.position.set(x,y,z);return m};
+ sc.add(P(new THREE.CylinderGeometry(4.6,4.2,.6,48),0x90be6d,0,-.3,0));
+ const plots={};ZONES.forEach(z=>{const m=P(new THREE.CylinderGeometry(1.1,1.1,.3,6),0x8b87b8,z.px,.1,z.pz);m.userData.id=z.id;sc.add(m);plots[z.id]=m});
+ const g=new THREE.Group(),pg=new THREE.Group();g.add(pg);g.position.set(0,0,2.4);sc.add(g);
+ const sh=new THREE.Mesh(new THREE.CircleGeometry(.55,32),new THREE.MeshBasicMaterial({color:0,transparent:true,opacity:.22}));sh.rotation.x=-Math.PI/2;sh.position.y=.02;g.add(sh);
+ const SG=new THREE.SphereGeometry(.12,24,24),limb=(x,y)=>{const m=P(SG,0x48cae4,x,y,0);pg.add(m);return m};
+ pg.add(P(new THREE.SphereGeometry(.42,48,48),0xffffff,0,1.35,0),P(new THREE.SphereGeometry(.32,48,48),0x48cae4,0,.78,0));
+ const hl=limb(-.38,.78),hr=limb(.38,.78),fl=limb(-.18,.12),fr=limb(.18,.12);
+ [-.15,.15].forEach(x=>pg.add(P(new THREE.SphereGeometry(.05,16,16),0x1b1740,x,1.42,.38)));
+ const mouth=P(new THREE.TorusGeometry(.1,.025,12,32,Math.PI),0x1b1740,0,1.22,.4);mouth.scale.y=-1;pg.add(mouth);
+ const leaf=P(new THREE.ConeGeometry(.12,.35,16),0x5fbf7f,0,1.9,0),scarf=P(new THREE.TorusGeometry(.3,.07,12,32),0x7fd1c7,0,1.02,0),star=P(new THREE.OctahedronGeometry(.17),0xffe27a,0,2.35,0);
+ scarf.rotation.x=Math.PI/2;[leaf,scarf,star].forEach(m=>{m.scale.setScalar(0);m.visible=false;pg.add(m)});
+ T={cam,r,plots,g,pg,mouth,hl,hr,fl,fr,sh,acc:[[leaf,'meadow'],[scarf,'tide'],[star,'sky']],want:[0,0,0],my:-1,mx:1,tgt:g.position.clone(),vx:0,vz:0,sp:0,ph:0,clock:new THREE.Clock()};
+ $('#stage').appendChild(r.domElement);
+ const ray=new THREE.Raycaster();
+ r.domElement.addEventListener('pointerdown',e=>{const b=r.domElement.getBoundingClientRect();ray.setFromCamera({x:(e.clientX-b.left)/b.width*2-1,y:-((e.clientY-b.top)/b.height*2-1)},cam);const h=ray.intersectObjects(Object.values(plots))[0];if(h)go(h.object.userData.id)});
+ const ease=(c,t,k,dt)=>c+(t-c)*(1-Math.exp(-k*dt)),cl=(v,m)=>Math.max(-m,Math.min(m,v));
+ (function loop(){requestAnimationFrame(loop);const dt=Math.min(T.clock.getDelta(),.05);if(cur!=1)return;const t=T.clock.elapsedTime;
+  const m=T.mouth;m.scale.y=ease(m.scale.y,T.my,8,dt);m.scale.x=ease(m.scale.x,T.mx,8,dt);
+  T.acc.forEach(([o],i)=>{const s=ease(o.scale.x,T.want[i],7,dt);o.scale.setScalar(s);o.visible=s>.02});
+  if(reduce){g.position.copy(T.tgt)}else{
+   T.vx+=((T.tgt.x-g.position.x)*16-T.vx*8)*dt;T.vz+=((T.tgt.z-g.position.z)*16-T.vz*8)*dt;
+   g.position.x+=T.vx*dt;g.position.z+=T.vz*dt;
+   T.sp=ease(T.sp,Math.min(Math.hypot(T.vx,T.vz)/2,1),10,dt);T.ph+=dt*11*T.sp;
+   const w=Math.sin(T.ph)*T.sp,br=Math.sin(t*2)*.015;
+   pg.position.y=Math.abs(w)*.12+Math.sin(t*2)*.03*(1-T.sp);pg.scale.set(1-br*.5,1+br,1-br*.5);
+   fl.position.set(-.18,.12+Math.max(0,Math.cos(T.ph))*.08*T.sp,w*.2);fr.position.set(.18,.12+Math.max(0,-Math.cos(T.ph))*.08*T.sp,-w*.2);
+   hl.position.set(-.38,.78+Math.sin(t*2)*.02,-w*.16);hr.position.set(.38,.78+Math.sin(t*2+1)*.02,w*.16);
+   pg.rotation.z=ease(pg.rotation.z,cl(-T.vx*.05,.2),8,dt);pg.rotation.y=Math.sin(t*.5)*.15+cl(T.vx*.03,.15);
+   sh.scale.setScalar(1-pg.position.y*.8)}
+  r.render(sc,cam)})();
+}
+function updatePip(){if(!T)return;const t=S.moods.find(m=>m.d==day()),v=t?t.v:4;
+ T.my=v>=4?-1:v<=2?1:.08;T.mx=v==5?1.3:1;T.want=T.acc.map(([,z])=>S.unlocked.includes(z)?1:0);
+ ZONES.forEach(z=>T.plots[z.id].material.color.set(S.unlocked.includes(z.id)?0x7fcf9a:0x8b87b8))}
+try{if(window.THREE)init3d()}catch(e){T=null}
+switchScreen(1);paint();upd();size();
+</script>
+</body>
+</html>
